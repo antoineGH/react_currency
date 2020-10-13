@@ -8,8 +8,13 @@ export default class InputCurrency extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(selectedCurrency) {
-        this.props.onCurrencyChange(selectedCurrency)
+    handleChange(selected) {
+        if (selected[0] === undefined) {
+            this.props.onCurrencyChange(undefined)
+        } else {
+            const selectedCurrency = selected[0].value
+            this.props.onCurrencyChange(selectedCurrency)
+        }
     }
 
     render() {
@@ -20,7 +25,11 @@ export default class InputCurrency extends Component {
             <Select
                 options={listCurrency}
                 values={[]}
-                onChange={(selected) => this.handleChange(selected[0].value) }
+                onChange={(selected) => this.handleChange(selected)}
+                keepSelectedInList={true}
+                dropdownHandle={true}
+                closeOnSelect={true}
+                clearable={true}
             />
         )
     }

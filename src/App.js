@@ -1,6 +1,8 @@
 import React from 'react';
 import Currency from './components/currency/Currency'
 
+import './App.css';
+
 function App() {
 
   // TODO

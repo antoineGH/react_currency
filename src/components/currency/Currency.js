@@ -80,6 +80,9 @@ export default class Currency extends Component {
                     currencies.push({ value: prop, label: prop, rate: value })
                 }
                 this.setState({ listCurrency: currencies })
+                if (this.state.inputValue && this.state.outputCurrency) {
+                    this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, currencies) })
+                }
             })
             .catch(error => {
                 console.log(error)
@@ -89,25 +92,25 @@ export default class Currency extends Component {
     // CURRENCY INPUT CHANGE
     handleCurrencyInputChange(selectedCurrency) {
 
-        this.setState({ inputCurrency: selectedCurrency })
-        this.setBase(selectedCurrency)
-
-        setTimeout(() => {
-            const listCurrency = this.state.listCurrency
-
-            if (this.state.inputValue && this.state.outputCurrency) {
-                this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, listCurrency) })
-            }
-        }, 500)
+        if (selectedCurrency === undefined) {
+            this.setState( {inputCurrency: '', outputValue : '' })
+        } else {
+            this.setState({ inputCurrency: selectedCurrency })
+            this.setBase(selectedCurrency)
+        }
     }
 
     // CURRENCY OUTPUT CHANGE
     handleCurrencyOutputChange(selectedCurrency) {
 
-        this.setState({ outputCurrency: selectedCurrency })
-
-        if (this.state.inputValue && this.state.inputCurrency) {
-            this.setState({ outputValue: toCurrency(this.state.inputValue, selectedCurrency, this.state.listCurrency) })
+        if (selectedCurrency === undefined) {
+            this.setState({ outputCurrency: '', outputValue: '' })
+        } else {
+            this.setState({ outputCurrency: selectedCurrency })
+    
+            if (this.state.inputValue && this.state.inputCurrency) {
+                this.setState({ outputValue: toCurrency(this.state.inputValue, selectedCurrency, this.state.listCurrency) })
+            }
         }
     }
 
@@ -134,13 +137,13 @@ export default class Currency extends Component {
     render() {
         const listCurrency = this.state.listCurrency;
 
-
         return (
             <div>
                 <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} />
                 <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} />
+                {/* {console.log(this.inputValue.current.value)} */}
             </div>
         )
     }
