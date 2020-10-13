@@ -26,6 +26,7 @@ function toCurrency(inputValue, outputCurrency, listCurrency) {
 
     const rate = getRate(outputCurrency, listCurrency);
     const output = inputValue * rate
+    if (output === 0) return 1
     const rounded = Math.round(output * 10000) / 10000;
     return rounded.toString();
 }
@@ -105,7 +106,7 @@ export default class Currency extends Component {
             inputCurrency: 'USD',
             outputCurrency: 'EUR',
             date: '',
-            inputValue: '',
+            inputValue: '1',
             outputValue: ''
         }
     }
@@ -190,22 +191,22 @@ export default class Currency extends Component {
 
                 {/* Input Value & Currency */}
                 <Row>
-                    <Col xs={12} sm={12} md={6}>
+                    <Col xs={12} sm={12} md={12} lg={6}>
                         <Row>
-                            <Col xs={12} sm={12} md={6}>
+                            <Col xs={12} sm={12} md={6} lg={6}>
                                 <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                             </Col>
-                            <Col xs={12} sm={12} md={6}>
+                            <Col xs={12} sm={12} md={6} lg={6}>
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} />
                             </Col>
                         </Row>
 
                         {/* Output Value & Currency */}
                         <Row>
-                            <Col xs={12} sm={12} md={6}>
+                            <Col xs={12} sm={12} md={6} lg={6}>
                                 <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                             </Col>
-                            <Col xs={12} sm={12} md={6}>
+                            <Col xs={12} sm={12} md={6} lg={6}>
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} />
                             </Col>
                         </Row>
