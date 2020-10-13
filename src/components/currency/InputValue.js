@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Form from 'react-bootstrap/Form'
 
 export default class InputValue extends Component {
 
@@ -15,7 +16,7 @@ export default class InputValue extends Component {
         const value = this.props.inputValue
 
         return (
-            <input value={value} onChange={this.handleChange} />
+            <Form.Control className='inputValue' type="text" value={value} onChange={this.handleChange} />
         )
     }
 }
