@@ -44,22 +44,52 @@ function fromCurrency(outputValue, outputCurrency, listCurrency) {
 
 function getDatetime(dt) {
 
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
     const date = new Date(dt);
 
     const today_date = date.getDate()
-    const day = (days[date.getDay()]).substring(0, 3)
     const hours = ('0' + date.getHours()).slice(-2);
     const minutes = ('0' + date.getMinutes()).slice(-2);
-    const seconds = ('0' + date.getSeconds()).slice(-2);
     const month = (months[date.getMonth()]).substring(0, 3)
     const year = date.getFullYear()
 
-    const formattedTime = `${day} ${today_date} ${month} ${year} ${hours}:${minutes}:${seconds}`
+    const formattedTime = `${month}, ${today_date} ${year} ${hours}:${minutes} UTC`
 
     return formattedTime
+}
+
+function InformationDate(props) {
+    if (props.state.date) {
+        return (
+            <Row>
+                <Col xs={12} sm={12} md={6}>
+                    {props.state.date && <p style={{ marginTop: '-4.5%' }} className='currency_description_details'>{getDatetime(Date.parse(props.state.date))}</p>}
+                </Col>
+            </Row>
+        );
+    }
+    return null
+}
+
+function InformationCurrency(props) {
+    if (props.state.listCurrency) {
+        return (
+            <>
+                <Row>
+                    <Col xs={12} sm={12} md={6}>
+                        <p className='mt-3' style={{ fontSize: '1.5rem' }}>1 {props.state.inputCurrency} equals</p>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs={12} sm={12} md={6}>
+                        <p style={{ fontSize: '3rem', marginTop: '-4%' }}>{toCurrency(1, props.state.outputCurrency, props.state.listCurrency)} {props.state.outputCurrency}</p>
+                    </Col>
+                </Row>
+            </>
+        );
+    }
+    return null
 }
 
 export default class Currency extends Component {
@@ -72,8 +102,8 @@ export default class Currency extends Component {
         this.handleValueOutputChange = this.handleValueOutputChange.bind(this);
         this.state = {
             listCurrency: '',
-            inputCurrency: '',
-            outputCurrency: '',
+            inputCurrency: 'USD',
+            outputCurrency: 'EUR',
             date: '',
             inputValue: '',
             outputValue: ''
@@ -81,10 +111,7 @@ export default class Currency extends Component {
     }
 
     componentDidMount() {
-        setTimeout(() => {
-            this.setBase('CNY')
-            console.log('Loaded')
-        }, 2000)
+        this.setBase('USD')
     }
 
     setBase(selectedCurrency) {
@@ -155,31 +182,33 @@ export default class Currency extends Component {
 
         return (
             <Container>
+                {/* Conversion One Unit & Information */}
+                <InformationCurrency state={this.state} />
+
+                {/* Data Date */}
+                <InformationDate state={this.state} />
 
                 {/* Input Value & Currency */}
                 <Row>
                     <Col xs={12} sm={12} md={6}>
-                        <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
-                    </Col>
-                    <Col xs={12} sm={12} md={6}>
-                        <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} />
-                    </Col>
-                </Row>
+                        <Row>
+                            <Col xs={12} sm={12} md={6}>
+                                <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
+                            </Col>
+                            <Col xs={12} sm={12} md={6}>
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} />
+                            </Col>
+                        </Row>
 
-                {/* Output Value & Currency */}
-                <Row>
-                    <Col xs={12} sm={12} md={6}>
-                        <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
-                    </Col>
-                    <Col xs={12} sm={12} md={6}>
-                        <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} />
-                    </Col>
-                </Row>
-
-                {/* Data Date */}
-                <Row>
-                    <Col xs={12} sm={12} md={6}>
-                        {this.state.date && <p>{getDatetime(Date.parse(this.state.date))}</p>}
+                        {/* Output Value & Currency */}
+                        <Row>
+                            <Col xs={12} sm={12} md={6}>
+                                <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
+                            </Col>
+                            <Col xs={12} sm={12} md={6}>
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} />
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
             </Container>

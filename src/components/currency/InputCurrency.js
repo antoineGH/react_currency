@@ -32,7 +32,7 @@ export default class InputCurrency extends Component {
         return (
             <Select
                 options={listCurrency}
-                values={[]}
+                values= {[]}
                 onChange={(selected) => this.handleChange(selected)}
                 keepSelectedInList={true}
                 dropdownHandle={true}
