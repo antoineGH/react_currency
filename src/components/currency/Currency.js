@@ -10,13 +10,13 @@ import fetchCurrency from './utils/fetchCurrency'
 import toCurrency from './utils/toCurrency'
 import fromCurrency from './utils/fromCurrency'
 import { currenciesName } from './utils/currenciesName'
+import sortDate from './utils/sortDate'
+import genValues from './utils/genValues'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
-
-import moment from 'moment';
 
 export default class Currency extends Component {
 
@@ -28,6 +28,7 @@ export default class Currency extends Component {
         this.handleCurrencyOutputChange = this.handleCurrencyOutputChange.bind(this);
         this.handleValueInputChange = this.handleValueInputChange.bind(this);
         this.handleValueOutputChange = this.handleValueOutputChange.bind(this);
+        this.getGraphInfo = this.getGraphInfo.bind(this);
         this.state = {
             listCurrency: '',
             inputCurrency: 'USD',
@@ -84,23 +85,11 @@ export default class Currency extends Component {
                 const graphTitle = { base: baseCurrency, dest: destCurrency, start_at: startDate, end_at: endDate }
 
                 // Sort Object of objects with Date as a key
-                const orderedDates = []
-                Object.keys(response.rates).sort(function (a, b) {
-                    return moment(a, 'YYYY-MM-DD').toDate() - moment(b, 'YYYY-MM-DD').toDate();
-                }).forEach(function (key) {
-                    orderedDates[key] = response.rates[key];
-                })
-
-                const graphLegend = []
-                const graphValues = []
-                for (let [date, value] of Object.entries(orderedDates)) {
-                    date = date.split('-')
-                    date = date[2] + '/' +date[1]
-                    console.log(date)
-                    graphLegend.push(date)
-                    graphValues.push(value[destCurrency])
-                }
-                console.log(graphLegend)
+                const orderedDates = sortDate(response)               
+                
+                // Generate Arrays for Rates Values and Date.
+                const { graphLegend, graphValues } = genValues(orderedDates, destCurrency)
+                // Update State                
                 this.setState({ graphLegend: graphLegend, graphValues: graphValues, graphTitle: graphTitle, hasLoaded: true })
             })
             .catch(error => {
@@ -157,7 +146,6 @@ export default class Currency extends Component {
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
-        const { graphValues, graphTitle, graphLegend } = this.state;
 
         return (
             <Container>
@@ -192,9 +180,9 @@ export default class Currency extends Component {
                 </Row>
 
                 {/* Currency Graph */}
-                <Row className='justify-content-center text-center'>
+                <Row className='justify-content-center text-center mt-2 mt-md-5'>
                     <Col>
-                        {this.state.hasLoaded && <CurrencyGraph graphValues={graphValues} graphLegend={graphLegend} graphTitle={graphTitle} />}
+                        {this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo}/>}
                     </Col>
                 </Row>
             </Container>

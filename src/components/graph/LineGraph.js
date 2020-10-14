@@ -4,7 +4,7 @@ import Chart from "chart.js";
 // Declare myLineChart and set chart default settings
 let myLineChart;
 Chart.defaults.global.legend.display = true;
-Chart.defaults.global.elements.line.tension = 0.4;
+Chart.defaults.global.elements.line.tension = 0;
 
 export default class LineGraph extends Component {
 
