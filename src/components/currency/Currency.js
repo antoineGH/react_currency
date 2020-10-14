@@ -129,20 +129,20 @@ export default class Currency extends Component {
                 <Row>
                     <Col xs={12} sm={12} md={12} lg={8}>
                         <Row>
-                            <Col xs={12} sm={4} md={3} lg={3} className='inputValue'>
+                            <Col xs={12} sm={3} md={3} lg={3} className='inputValue my-auto'>
                                 <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                             </Col>
-                            <Col xs={12} sm={8} md={6} lg={6} className='inputCurrency mt-2 mt-sm-0' >
+                            <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: "USD", label: "USD" }} />
                             </Col>
                         </Row>
 
                         {/* Output Value & Currency */}
                         <Row className='mt-sm-3'>
-                            <Col xs={12} sm={4} md={3} lg={3} className='mt-4 mt-sm-0 inputValue'>
+                            <Col xs={12} sm={3} md={3} lg={3} className='mt-4 mt-sm-0 my-auto inputValue'>
                                 <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                             </Col>
-                            <Col xs={12} sm={8} md={6} lg={6} className='inputCurrency mt-2 mt-sm-0'>
+                            <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR" }} />
                             </Col>
                         </Row>
