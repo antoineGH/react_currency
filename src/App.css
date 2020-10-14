@@ -30,6 +30,14 @@
   margin-right: -3%;
 }
 
+/* Currency Graph Design */
+
+.card_graph_currency{
+  padding: 5px 5px 0px 10px;
+  background-color: #ffffff;
+  border-style: none;
+}
+
 /* FONT Management */
 
 @font-face {

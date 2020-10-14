@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import fetchCurrency from './utils/fetchCurrency'
+
 import InputCurrency from './InputCurrency'
 import InputValue from './InputValue'
 import InformationCurrency from './InformationCurrency'
 import InformationDate from './InformationDate'
+import CurrencyGraph from '../graph/CurrencyGraph'
 
+import fetchCurrency from './utils/fetchCurrency'
 import toCurrency from './utils/toCurrency'
 import fromCurrency from './utils/fromCurrency'
 import { currenciesName } from './utils/currenciesName'
@@ -12,6 +14,9 @@ import { currenciesName } from './utils/currenciesName'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
+
+import moment from 'moment';
 
 export default class Currency extends Component {
 
@@ -30,7 +35,11 @@ export default class Currency extends Component {
             date: '',
             inputValue: '1',
             outputValue: '',
-            values: []
+            values: [],
+            graphLegend: {},
+            graphValues: {},
+            graphTitle: {},
+            hasLoaded: false
         }
     }
 
@@ -38,6 +47,7 @@ export default class Currency extends Component {
 
     componentDidMount() {
         this.setBase('USD')
+        this.getGraphInfo('2020-01-01', '2020-02-01', 'USD', 'EUR')
     }
 
     // --- CLASS METHODS --- 
@@ -56,7 +66,6 @@ export default class Currency extends Component {
                         rate: value
                     })
                 }
-                console.log(currenciesName)
                 this.setState({ listCurrency: currencies })
                 this.setState({ values: currencies[0] })
                 if (this.state.inputValue && this.state.outputCurrency) {
@@ -65,6 +74,38 @@ export default class Currency extends Component {
             })
             .catch(error => {
                 console.log(error)
+            })
+    }
+
+    // Get Graph Info
+    getGraphInfo(startDate, endDate, baseCurrency, destCurrency) {
+        fetchHistoryCurrency(startDate, endDate, baseCurrency, destCurrency)
+            .then(response => {
+                const graphTitle = { base: baseCurrency, dest: destCurrency, start_at: startDate, end_at: endDate }
+
+                // Sort Object of objects with Date as a key
+                const orderedDates = []
+                Object.keys(response.rates).sort(function (a, b) {
+                    return moment(a, 'YYYY-MM-DD').toDate() - moment(b, 'YYYY-MM-DD').toDate();
+                }).forEach(function (key) {
+                    orderedDates[key] = response.rates[key];
+                })
+
+                const graphLegend = []
+                const graphValues = []
+                for (let [date, value] of Object.entries(orderedDates)) {
+                    date = date.split('-')
+                    date = date[2] + '/' +date[1]
+                    console.log(date)
+                    graphLegend.push(date)
+                    graphValues.push(value[destCurrency])
+                }
+                console.log(graphLegend)
+                this.setState({ graphLegend: graphLegend, graphValues: graphValues, graphTitle: graphTitle, hasLoaded: true })
+            })
+            .catch(error => {
+                console.log(error)
+                return {}
             })
     }
 
@@ -116,6 +157,7 @@ export default class Currency extends Component {
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
+        const { graphValues, graphTitle, graphLegend } = this.state;
 
         return (
             <Container>
@@ -133,7 +175,7 @@ export default class Currency extends Component {
                                 <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                             </Col>
                             <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: "USD", label: "USD" }} />
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: "USD", label: "USD (United States Dollar)" }} />
                             </Col>
                         </Row>
 
@@ -143,9 +185,16 @@ export default class Currency extends Component {
                                 <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                             </Col>
                             <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR" }} />
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR (Euro)" }} />
                             </Col>
                         </Row>
+                    </Col>
+                </Row>
+
+                {/* Currency Graph */}
+                <Row className='justify-content-center text-center'>
+                    <Col>
+                        {this.state.hasLoaded && <CurrencyGraph graphValues={graphValues} graphLegend={graphLegend} graphTitle={graphTitle} />}
                     </Col>
                 </Row>
             </Container>
@@ -153,3 +202,4 @@ export default class Currency extends Component {
         )
     }
 }
+
