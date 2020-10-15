@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 
 import LineGraph from "./LineGraph";
 
+import getDate from '../currency/utils/getDate'
+import getDateBefore from '../currency/utils/getDateBefore'
+
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
@@ -43,15 +46,24 @@ export default class CurrencyGraph extends Component {
 
     // SET REAL DATE DELTA
     getMonth() {
-        this.props.getGraphInfo('2020-03-01', '2020-03-08', this.state.graphTitle.base, this.state.graphTitle.dest )
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 1, 'months')
+        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest )
     }
 
     getWeek() {
-        this.props.getGraphInfo('2020-03-01', '2020-03-08', this.state.graphTitle.base, this.state.graphTitle.dest )
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 9, 'days')
+        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest )
     }
 
     getFiveDays() {
-        this.props.getGraphInfo('2020-10-08', '2020-10-13', this.state.graphTitle.base, this.state.graphTitle.dest )
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 7, 'days')
+        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest )
     }
 
 

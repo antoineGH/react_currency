@@ -12,6 +12,8 @@ import fromCurrency from './utils/fromCurrency'
 import { currenciesName } from './utils/currenciesName'
 import sortDate from './utils/sortDate'
 import genValues from './utils/genValues'
+import getDate from './utils/getDate'
+import getDateBefore from './utils/getDateBefore'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -48,7 +50,11 @@ export default class Currency extends Component {
 
     componentDidMount() {
         this.setBase('USD')
-        this.getGraphInfo('2020-01-01', '2020-02-01', 'USD', 'EUR')
+
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 1, 'months')
+        this.getGraphInfo(end_date, start_date, 'USD', 'EUR')
     }
 
     // --- CLASS METHODS --- 
