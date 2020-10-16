@@ -41,6 +41,11 @@
   padding: .15rem 1.25rem;
 }
 
+.list-group-item.active {
+  background-color: #282c31;
+  border-color: #b3b3b3;
+}
+
 /* FONT Management */
 
 @font-face {

@@ -13,11 +13,28 @@ export default class LineGraph extends Component {
     // call buildChart function on Mount
     componentDidMount() {
         this.buildChart();
+        const { graphValues, graphLegend, graphTitle } = this.props;
+        this.setState({ graphLegend: graphLegend, graphTitle: graphTitle, graphValues: graphValues })
     }
 
     // call buildChart function on Update
     componentDidUpdate() {
         this.buildChart();
+    }
+
+    shouldComponentUpdate(nextProps) {
+        // Component should update if props.graphValues is different than nextProps.graphValue
+        if (this.props.graphValues !== nextProps.graphValues) {
+            return true;
+        }
+
+        // Component should update if props.style is different than nextProps.style
+        if (this.props.style !== nextProps.style) {
+            return true;
+        }
+
+        // Otherwise component shouldn't update
+        return false;
     }
 
     buildChart() {
@@ -40,7 +57,7 @@ export default class LineGraph extends Component {
                 labels: graphLegend,
                 datasets: [
                     {
-                        label: `${graphTitle.dest} value / 1 ${graphTitle.base}.`,
+                        label: `${graphTitle.dest} value for 1 ${graphTitle.base}.`,
                         data: ratesRounded,
                         fill: true,
                         borderColor: style.borderColor,
@@ -57,11 +74,11 @@ export default class LineGraph extends Component {
                 maintainAspectRatio: false,
                 scales: {
                     xAxes: [{
-                        ticks: { 
+                        ticks: {
                             display: true,
                             autoSkip: true,
                             maxTicksLimit: 7
-                         },
+                        },
                         gridLines: {
                             display: true,
                             drawBorder: true

@@ -91,8 +91,8 @@ export default class Currency extends Component {
                 const graphTitle = { base: baseCurrency, dest: destCurrency, start_at: startDate, end_at: endDate }
 
                 // Sort Object of objects with Date as a key
-                const orderedDates = sortDate(response)               
-                
+                const orderedDates = sortDate(response)
+
                 // Generate Arrays for Rates Values and Date.
                 const { graphLegend, graphValues } = genValues(orderedDates, destCurrency)
                 // Update State                
@@ -112,6 +112,12 @@ export default class Currency extends Component {
         } else {
             this.setState({ inputCurrency: selectedCurrency })
             this.setBase(selectedCurrency)
+
+            // Updating History 
+            const date = new Date(Date.now())
+            const start_date = getDate(date)
+            const end_date = getDateBefore(date, 1, 'months')
+            this.getGraphInfo(end_date, start_date, selectedCurrency, this.state.outputCurrency)
         }
     }
 
@@ -122,6 +128,12 @@ export default class Currency extends Component {
             this.setState({ outputCurrency: '', outputValue: '' })
         } else {
             this.setState({ outputCurrency: selectedCurrency })
+
+            // Updating History 
+            const date = new Date(Date.now())
+            const start_date = getDate(date)
+            const end_date = getDateBefore(date, 1, 'months')
+            this.getGraphInfo(end_date, start_date, this.state.inputCurrency , selectedCurrency)
 
             if (this.state.inputValue && this.state.inputCurrency) {
                 this.setState({ outputValue: toCurrency(this.state.inputValue, selectedCurrency, this.state.listCurrency) })
@@ -182,15 +194,15 @@ export default class Currency extends Component {
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR (Euro)" }} />
                             </Col>
                         </Row>
+                        {/* Currency Graph */}
+                        <Row className='justify-content-center text-center mt-2 mt-md-5'>
+                            <Col>
+                                {this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} />}
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
 
-                {/* Currency Graph */}
-                <Row className='justify-content-center text-center mt-2 mt-md-5'>
-                    <Col>
-                        {this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo}/>}
-                    </Col>
-                </Row>
             </Container>
 
         )
