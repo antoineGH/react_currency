@@ -22,7 +22,6 @@ export default class CurrencyGraph extends Component {
         this.getMonth = this.getMonth.bind(this);
         this.getWeek = this.getWeek.bind(this);
         this.getFiveDays = this.getFiveDays.bind(this);
-        // this.handleActive = this.handleActive.bind(this);
         this.state = {
             style: {},
         };
@@ -33,8 +32,6 @@ export default class CurrencyGraph extends Component {
     }
 
     createMockData() {
-        const { graphValues, graphLegend, graphTitle } = this.props;
-
         const currency_style = {
             borderColor: 'rgb(255, 93, 93)',
             backgroundColor: 'rgba(255, 10, 13, 0.1)',
@@ -43,8 +40,7 @@ export default class CurrencyGraph extends Component {
             pointHoverRadius: 8,
             pointHoverBackgroundColor: 'rgb(255, 93, 93)'
         }
-
-        this.setState({ graphValues: graphValues, graphLegend: graphLegend, graphTitle: graphTitle, style: currency_style })
+        this.setState({ style: currency_style })
     }
 
     handleActive(active) {
@@ -58,7 +54,7 @@ export default class CurrencyGraph extends Component {
         this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
         this.handleActive('year')
     }
-    
+
     getSixMonths() {
         const date = new Date(Date.now())
         const start_date = getDate(date)

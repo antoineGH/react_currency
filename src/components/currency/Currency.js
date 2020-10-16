@@ -17,11 +17,12 @@ import sortDate from './utils/sortDate'
 import genValues from './utils/genValues'
 import getDate from './utils/getDate'
 import getDateBefore from './utils/getDateBefore'
+import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
+import Button from 'react-bootstrap/Button'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -57,7 +58,10 @@ export default class Currency extends Component {
             active: 'month',
             graphLegend: {},
             graphValues: {},
-            graphTitle: {}
+            graphTitle: {},
+
+            optionsInput: { value: "USD", label: "USD (United States Dollar)" },
+            optionsOutput: { value: "EUR", label: "EUR (Euro)" }
         }
     }
 
@@ -147,7 +151,7 @@ export default class Currency extends Component {
         if (selectedCurrency === undefined) {
             this.setState({ inputCurrency: '', outputValue: '' })
         } else {
-            this.setState({ inputCurrency: selectedCurrency })
+            this.setState({ inputCurrency: selectedCurrency, optionsInput: { value: selectedCurrency, label: selectedCurrency } })
             this.setBase(selectedCurrency)
 
             // Updating History 
@@ -167,7 +171,7 @@ export default class Currency extends Component {
         if (selectedCurrency === undefined) {
             this.setState({ outputCurrency: '', outputValue: '' })
         } else {
-            this.setState({ outputCurrency: selectedCurrency })
+            this.setState({ outputCurrency: selectedCurrency, optionsOutput: { value: selectedCurrency, label: selectedCurrency } })
 
             // Updating History 
             const date = new Date(Date.now())
@@ -209,6 +213,24 @@ export default class Currency extends Component {
         this.setState({ active: active })
     }
 
+    // Reverse 
+    reverse() {
+        const {inputCurrency, outputCurrency, optionsInput, optionsOutput} = this.state
+        if (!inputCurrency || !outputCurrency) { return }
+        
+        this.setState({ inputCurrency: outputCurrency, outputCurrency: inputCurrency, optionsInput: optionsOutput, optionsOutput: optionsInput })
+        this.setBase(outputCurrency)
+
+        // Updating History 
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 1, 'months')
+        this.getGraphInfo(end_date, start_date, outputCurrency, inputCurrency)
+        setTimeout(() => {
+            this.setState({ active: 'month' })
+        }, 500)
+    }
+
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
@@ -218,7 +240,7 @@ export default class Currency extends Component {
                 <Container>
                     <div className='error_data'>
                         <FontAwesomeIcon className='mt-1 mr-1' size="lg" icon={['fas', 'exclamation-circle']} />
-                        Impossible to fetch data, try again later. 
+                        Impossible to fetch data, try again later.
                     </div>
                 </Container>
             );
@@ -237,12 +259,13 @@ export default class Currency extends Component {
                 {/* Input Value & Currency */}
                 <Row>
                     <Col xs={12} sm={12} md={12} lg={8}>
+                        <Button onClick= {() => this.reverse()}>Reverse</Button>
                         <Row>
                             <Col xs={12} sm={3} md={3} lg={3} className='inputValue my-auto'>
                                 <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                             </Col>
                             <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: "USD", label: "USD (United States Dollar)" }} />
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: this.state.optionsInput.value, label: this.state.optionsInput.label }} />
                             </Col>
                         </Row>
 
@@ -252,7 +275,7 @@ export default class Currency extends Component {
                                 <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                             </Col>
                             <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR (Euro)" }} />
+                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: this.state.optionsOutput.value, label: this.state.optionsOutput.label }} />
                             </Col>
                         </Row>
 

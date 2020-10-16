@@ -8,7 +8,7 @@ export default class InputCurrency extends Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            search: ''
+            search: '',
         }
     }
 
@@ -32,7 +32,7 @@ export default class InputCurrency extends Component {
         return (
             <Select
                 options={listCurrency}
-                values={this.state.values ? [this.state.values] : [this.props.options]}
+                values={this.props.options && [this.props.options]}
                 
                 onChange={(selected) => this.handleChange(selected)}
                 keepSelectedInList={true}
