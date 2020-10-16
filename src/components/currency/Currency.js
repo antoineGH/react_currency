@@ -20,6 +20,37 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
 
+function DisplayGraph(props) {
+    // If inputCurrency AND outputCurrency return Graph
+    if (props.state.inputCurrency && props.state.outputCurrency) {
+        return (
+            <Row className='justify-content-center text-center mt-2 mt-md-5'>
+                <Col>
+                    {props.state.hasLoaded && <CurrencyGraph graphValues={props.state.graphValues} graphLegend={props.state.graphLegend} graphTitle={props.state.graphTitle} getGraphInfo={props.getGraphInfo} />}
+                </Col>
+            </Row>
+        );
+    }
+    return null
+}
+
+function DisplayInfo(props) {
+    // If inputCurrency AND outputCurrency return Info
+    if (props.state.inputCurrency && props.state.outputCurrency) {
+        return (
+            <>
+                {/* Conversion One Unit & Information */}
+                <InformationCurrency state={props.state} />
+
+                {/* Data Date */}
+                <InformationDate state={props.state} />
+            </>
+        );
+    }
+    return null
+}
+
+
 export default class Currency extends Component {
 
     // --- CLASS CONSTRUCTOR ---
@@ -133,7 +164,7 @@ export default class Currency extends Component {
             const date = new Date(Date.now())
             const start_date = getDate(date)
             const end_date = getDateBefore(date, 1, 'months')
-            this.getGraphInfo(end_date, start_date, this.state.inputCurrency , selectedCurrency)
+            this.getGraphInfo(end_date, start_date, this.state.inputCurrency, selectedCurrency)
 
             if (this.state.inputValue && this.state.inputCurrency) {
                 this.setState({ outputValue: toCurrency(this.state.inputValue, selectedCurrency, this.state.listCurrency) })
@@ -167,11 +198,8 @@ export default class Currency extends Component {
 
         return (
             <Container>
-                {/* Conversion One Unit & Information */}
-                <InformationCurrency state={this.state} />
-
-                {/* Data Date */}
-                <InformationDate state={this.state} />
+                {/* Display Info & Date */}
+                <DisplayInfo state={this.state} />
 
                 {/* Input Value & Currency */}
                 <Row>
@@ -194,12 +222,9 @@ export default class Currency extends Component {
                                 <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: "EUR", label: "EUR (Euro)" }} />
                             </Col>
                         </Row>
-                        {/* Currency Graph */}
-                        <Row className='justify-content-center text-center mt-2 mt-md-5'>
-                            <Col>
-                                {this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} />}
-                            </Col>
-                        </Row>
+
+                        {/* Display Graph */}
+                        <DisplayGraph state={this.state} />
                     </Col>
                 </Row>
 
