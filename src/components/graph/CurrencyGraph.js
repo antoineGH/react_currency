@@ -22,9 +22,9 @@ export default class CurrencyGraph extends Component {
         this.getMonth = this.getMonth.bind(this);
         this.getWeek = this.getWeek.bind(this);
         this.getFiveDays = this.getFiveDays.bind(this);
+        // this.handleActive = this.handleActive.bind(this);
         this.state = {
             style: {},
-            active: 'month'
         };
     }
 
@@ -47,52 +47,56 @@ export default class CurrencyGraph extends Component {
         this.setState({ graphValues: graphValues, graphLegend: graphLegend, graphTitle: graphTitle, style: currency_style })
     }
 
+    handleActive(active) {
+        this.props.setActive(active)
+    }
+
     getYear() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 1, 'years')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: 'year' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('year')
     }
     
     getSixMonths() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 6, 'months')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: '6months' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('6months')
     }
 
     getThreeMonths() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 3, 'months')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: '3months' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('3months')
     }
 
     getMonth() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 1, 'months')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: 'month' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('month')
     }
 
     getWeek() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 9, 'days')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: '7days' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('7days')
     }
 
     getFiveDays() {
         const date = new Date(Date.now())
         const start_date = getDate(date)
         const end_date = getDateBefore(date, 7, 'days')
-        this.props.getGraphInfo(end_date, start_date, this.state.graphTitle.base, this.state.graphTitle.dest)
-        this.setState({ active: '5days' })
+        this.props.getGraphInfo(end_date, start_date, this.props.graphTitle.base, this.props.graphTitle.dest)
+        this.handleActive('5days')
     }
 
     render() {
@@ -105,22 +109,22 @@ export default class CurrencyGraph extends Component {
                 <ListGroup horizontal>
                     <Row className="justify-content-center mt-3 mb-2">
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }} className='ml-xs-0 ml-md-3'>
-                            <ListGroup.Item className={this.state.active === '5days' && 'active'} action onClick={this.getFiveDays}>5 Days</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === '5days' && 'active'} action onClick={this.getFiveDays}>5 Days</ListGroup.Item>
                         </Col>
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                            <ListGroup.Item className={this.state.active === '7days' && 'active'} action onClick={this.getWeek}>7 Days</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === '7days' && 'active'} action onClick={this.getWeek}>7 Days</ListGroup.Item>
                         </Col>
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                            <ListGroup.Item className={this.state.active === 'month' && 'active'} action onClick={this.getMonth}>1 Month</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === 'month' && 'active'} action onClick={this.getMonth}>1 Month</ListGroup.Item>
                         </Col>
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                            <ListGroup.Item className={this.state.active === '3months' && 'active'} action onClick={this.getThreeMonths}>3 Months</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === '3months' && 'active'} action onClick={this.getThreeMonths}>3 Months</ListGroup.Item>
                         </Col>
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                            <ListGroup.Item className={this.state.active === '6months' && 'active'} action onClick={this.getSixMonths}>6 Months</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === '6months' && 'active'} action onClick={this.getSixMonths}>6 Months</ListGroup.Item>
                         </Col>
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                            <ListGroup.Item className={this.state.active === 'year' && 'active'} action onClick={this.getYear}>1 Year</ListGroup.Item>
+                            <ListGroup.Item className={this.props.active === 'year' && 'active'} action onClick={this.getYear}>1 Year</ListGroup.Item>
                         </Col>
                     </Row>
                 </ListGroup>

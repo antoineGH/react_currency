@@ -20,37 +20,6 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
 
-function DisplayGraph(props) {
-    // If inputCurrency AND outputCurrency return Graph
-    if (props.state.inputCurrency && props.state.outputCurrency) {
-        return (
-            <Row className='justify-content-center text-center mt-2 mt-md-5'>
-                <Col>
-                    {props.state.hasLoaded && <CurrencyGraph graphValues={props.state.graphValues} graphLegend={props.state.graphLegend} graphTitle={props.state.graphTitle} getGraphInfo={props.getGraphInfo} />}
-                </Col>
-            </Row>
-        );
-    }
-    return null
-}
-
-function DisplayInfo(props) {
-    // If inputCurrency AND outputCurrency return Info
-    if (props.state.inputCurrency && props.state.outputCurrency) {
-        return (
-            <>
-                {/* Conversion One Unit & Information */}
-                <InformationCurrency state={props.state} />
-
-                {/* Data Date */}
-                <InformationDate state={props.state} />
-            </>
-        );
-    }
-    return null
-}
-
-
 export default class Currency extends Component {
 
     // --- CLASS CONSTRUCTOR ---
@@ -62,6 +31,7 @@ export default class Currency extends Component {
         this.handleValueInputChange = this.handleValueInputChange.bind(this);
         this.handleValueOutputChange = this.handleValueOutputChange.bind(this);
         this.getGraphInfo = this.getGraphInfo.bind(this);
+        this.setActive = this.setActive.bind(this);
         this.state = {
             listCurrency: '',
             inputCurrency: 'USD',
@@ -73,7 +43,8 @@ export default class Currency extends Component {
             graphLegend: {},
             graphValues: {},
             graphTitle: {},
-            hasLoaded: false
+            hasLoaded: false,
+            active: 'month'
         }
     }
 
@@ -149,6 +120,9 @@ export default class Currency extends Component {
             const start_date = getDate(date)
             const end_date = getDateBefore(date, 1, 'months')
             this.getGraphInfo(end_date, start_date, selectedCurrency, this.state.outputCurrency)
+            setTimeout(()=> {
+                this.setState({ active: 'month' })
+            }, 500)
         }
     }
 
@@ -165,6 +139,9 @@ export default class Currency extends Component {
             const start_date = getDate(date)
             const end_date = getDateBefore(date, 1, 'months')
             this.getGraphInfo(end_date, start_date, this.state.inputCurrency, selectedCurrency)
+            setTimeout(()=> {
+                this.setState({ active: 'month' })
+            }, 500)
 
             if (this.state.inputValue && this.state.inputCurrency) {
                 this.setState({ outputValue: toCurrency(this.state.inputValue, selectedCurrency, this.state.listCurrency) })
@@ -192,14 +169,21 @@ export default class Currency extends Component {
         }
     }
 
+    // Handle Active
+    setActive(active) {
+        this.setState({ active: active })
+    }
+
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
 
         return (
             <Container>
-                {/* Display Info & Date */}
-                <DisplayInfo state={this.state} />
+                {this.state.inputCurrency && this.state.outputCurrency
+                    ? <><InformationCurrency state={this.state} /><InformationDate state={this.state} /></>
+                    : <p>Info Please Select Currency</p>
+                }
 
                 {/* Input Value & Currency */}
                 <Row>
@@ -224,7 +208,14 @@ export default class Currency extends Component {
                         </Row>
 
                         {/* Display Graph */}
-                        <DisplayGraph state={this.state} />
+                        <Row className='justify-content-center text-center mt-2 mt-md-5'>
+                            <Col>
+                                {this.state.inputCurrency && this.state.outputCurrency
+                                    ? this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} active={this.state.active} setActive={this.setActive} />
+                                    : <p>Graph Please select currency</p>
+                                }
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
 
