@@ -46,6 +46,26 @@
   border-color: #b3b3b3;
 }
 
+/* Error Data  */
+
+.error_data{
+  margin-top: 20px;
+  margin-bottom: 20px; 
+  padding-top: 42px; 
+  height: 124px; 
+  display: flex; 
+  justify-content: center;
+}
+
+.select_currency {
+  margin-top: 20px;
+  margin-bottom: 20px; 
+  padding-top: 42px; 
+  height: 124px; 
+  display: flex; 
+  justify-content: left;
+}
+
 /* FONT Management */
 
 @font-face {

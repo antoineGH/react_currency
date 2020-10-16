@@ -6,6 +6,9 @@ import InformationCurrency from './InformationCurrency'
 import InformationDate from './InformationDate'
 import CurrencyGraph from '../graph/CurrencyGraph'
 
+import { trackPromise } from 'react-promise-tracker'
+import LoadingSpinner from '../loading/LoadingSpinner'
+
 import fetchCurrency from './utils/fetchCurrency'
 import toCurrency from './utils/toCurrency'
 import fromCurrency from './utils/fromCurrency'
@@ -33,25 +36,52 @@ export default class Currency extends Component {
         this.getGraphInfo = this.getGraphInfo.bind(this);
         this.setActive = this.setActive.bind(this);
         this.state = {
+            isLoaded: false,
+            hasError: false,
+
+            isHistoryLoaded: false,
+            hasHistoryError: false,
+
             listCurrency: '',
             inputCurrency: 'USD',
             outputCurrency: 'EUR',
             date: '',
             inputValue: '1',
             outputValue: '',
-            values: [],
+
+            active: 'month',
             graphLegend: {},
             graphValues: {},
-            graphTitle: {},
-            hasLoaded: false,
-            active: 'month'
+            graphTitle: {}
         }
     }
 
     // --- COMPONENT LIFECYCLE ---
 
     componentDidMount() {
-        this.setBase('USD')
+        trackPromise(
+            fetchCurrency('USD')
+                .then(response => {
+                    this.setState({ date: response.date })
+                    const currencies = []
+                    for (const [prop, value] of Object.entries(response.rates)) {
+                        const currencyName = '(' + currenciesName[prop] + ')'
+                        currencies.push({
+                            value: prop,
+                            label: `${prop} ${currencyName}`,
+                            rate: value
+                        })
+                    }
+                    this.setState({ listCurrency: currencies, isLoaded: true, hasError: false })
+                    if (this.state.inputValue && this.state.outputCurrency) {
+                        this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, currencies) })
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.setState({ hasError: true })
+                })
+        );
 
         const date = new Date(Date.now())
         const start_date = getDate(date)
@@ -75,14 +105,14 @@ export default class Currency extends Component {
                         rate: value
                     })
                 }
-                this.setState({ listCurrency: currencies })
-                this.setState({ values: currencies[0] })
+                this.setState({ listCurrency: currencies, isLoaded: true, hasError: false })
                 if (this.state.inputValue && this.state.outputCurrency) {
                     this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, currencies) })
                 }
             })
             .catch(error => {
                 console.log(error)
+                this.setState({ hasError: true })
             })
     }
 
@@ -98,11 +128,11 @@ export default class Currency extends Component {
                 // Generate Arrays for Rates Values and Date.
                 const { graphLegend, graphValues } = genValues(orderedDates, destCurrency)
                 // Update State                
-                this.setState({ graphLegend: graphLegend, graphValues: graphValues, graphTitle: graphTitle, hasLoaded: true })
+                this.setState({ graphLegend: graphLegend, graphValues: graphValues, graphTitle: graphTitle, isHistoryLoaded: true })
             })
             .catch(error => {
                 console.log(error)
-                return {}
+                this.setState({ hasHistoryError: true })
             })
     }
 
@@ -120,7 +150,7 @@ export default class Currency extends Component {
             const start_date = getDate(date)
             const end_date = getDateBefore(date, 1, 'months')
             this.getGraphInfo(end_date, start_date, selectedCurrency, this.state.outputCurrency)
-            setTimeout(()=> {
+            setTimeout(() => {
                 this.setState({ active: 'month' })
             }, 500)
         }
@@ -139,7 +169,7 @@ export default class Currency extends Component {
             const start_date = getDate(date)
             const end_date = getDateBefore(date, 1, 'months')
             this.getGraphInfo(end_date, start_date, this.state.inputCurrency, selectedCurrency)
-            setTimeout(()=> {
+            setTimeout(() => {
                 this.setState({ active: 'month' })
             }, 500)
 
@@ -178,11 +208,22 @@ export default class Currency extends Component {
     render() {
         const listCurrency = this.state.listCurrency;
 
+        if (this.state.hasError) {
+            return (
+                <Container>
+                    <div className='error_data'>Impossible to fetch data, try again later.</div>
+                </Container>
+            );
+        }
+
         return (
             <Container>
+                <LoadingSpinner />
                 {this.state.inputCurrency && this.state.outputCurrency
                     ? <><InformationCurrency state={this.state} /><InformationDate state={this.state} /></>
-                    : <p>Info Please Select Currency</p>
+                    : <div className='select_currency'>
+                        <p>Please select currency.</p>
+                    </div>
                 }
 
                 {/* Input Value & Currency */}
@@ -210,10 +251,7 @@ export default class Currency extends Component {
                         {/* Display Graph */}
                         <Row className='justify-content-center text-center mt-2 mt-md-5'>
                             <Col>
-                                {this.state.inputCurrency && this.state.outputCurrency
-                                    ? this.state.hasLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} active={this.state.active} setActive={this.setActive} />
-                                    : <p>Graph Please select currency</p>
-                                }
+                                {this.state.inputCurrency && this.state.outputCurrency && this.state.isHistoryLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} active={this.state.active} setActive={this.setActive} />}
                             </Col>
                         </Row>
                     </Col>
