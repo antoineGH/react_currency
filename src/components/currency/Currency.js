@@ -23,6 +23,11 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
+
 export default class Currency extends Component {
 
     // --- CLASS CONSTRUCTOR ---
@@ -211,7 +216,10 @@ export default class Currency extends Component {
         if (this.state.hasError) {
             return (
                 <Container>
-                    <div className='error_data'>Impossible to fetch data, try again later.</div>
+                    <div className='error_data'>
+                        <FontAwesomeIcon className='mt-1 mr-1' size="lg" icon={['fas', 'exclamation-circle']} />
+                        Impossible to fetch data, try again later. 
+                    </div>
                 </Container>
             );
         }

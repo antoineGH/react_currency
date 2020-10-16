@@ -18,7 +18,7 @@ export default function LoadingSpinner(props) {
                     <Col Col xs={12} sm={12} md={12} lg={8}>
                         {
                             (promiseInProgress === true)
-                                ? <ScaleLoader css="margin-top: 20px; margin-bottom: 20px; padding-top: 30px; height: 124px; display: flex; justify-content: center;" margin={2} color={"#2E3030"} size={15} />
+                                ? <ScaleLoader css="margin-top: 20px; margin-bottom: 20px; padding-top: 30px; height: 107px; display: flex; justify-content: center;" margin={2} color={"#2E3030"} size={15} />
                                 : null
                         }
                     </Col>
