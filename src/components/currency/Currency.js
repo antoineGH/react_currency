@@ -6,8 +6,7 @@ import InformationCurrency from './InformationCurrency'
 import InformationDate from './InformationDate'
 import CurrencyGraph from '../graph/CurrencyGraph'
 
-import { trackPromise } from 'react-promise-tracker'
-import LoadingSpinner from '../loading/LoadingSpinner'
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 import fetchCurrency from './utils/fetchCurrency'
 import toCurrency from './utils/toCurrency'
@@ -29,6 +28,30 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 library.add(fas);
 
+function DisplayInformationCurrency(props) {
+    const state = props.state
+
+    if (state.infoIsLoading) {
+        return (
+            <div className='mt-5 ml-5'>
+                <ScaleLoader css="display: flex; justify-content: left;" color={"#2E3030"} size={15} />
+            </div>
+        );
+
+    } else if (state.outputCurrency && state.inputCurrency) {
+        return (
+            <>
+                <InformationCurrency state={state} />
+                <InformationDate state={state} />
+            </>
+        );
+    } else {
+        return (<div className='select_currency'>
+            <p>Please select currency.</p>
+        </div>);
+    }
+}
+
 export default class Currency extends Component {
 
     // --- CLASS CONSTRUCTOR ---
@@ -47,6 +70,8 @@ export default class Currency extends Component {
 
             isHistoryLoaded: false,
             hasHistoryError: false,
+
+            infoIsLoading: false,
 
             listCurrency: '',
             inputCurrency: 'USD',
@@ -68,41 +93,7 @@ export default class Currency extends Component {
     // --- COMPONENT LIFECYCLE ---
 
     componentDidMount() {
-        trackPromise(
-            fetchCurrency('USD')
-                .then(response => {
-                    this.setState({ date: response.date })
-                    const currencies = []
-                    for (const [prop, value] of Object.entries(response.rates)) {
-                        const currencyName = '(' + currenciesName[prop] + ')'
-                        currencies.push({
-                            value: prop,
-                            label: `${prop} ${currencyName}`,
-                            rate: value
-                        })
-                    }
-                    this.setState({ listCurrency: currencies, isLoaded: true, hasError: false })
-                    if (this.state.inputValue && this.state.outputCurrency) {
-                        this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, currencies) })
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                    this.setState({ hasError: true })
-                })
-        );
-
-        const date = new Date(Date.now())
-        const start_date = getDate(date)
-        const end_date = getDateBefore(date, 1, 'months')
-        this.getGraphInfo(end_date, start_date, 'USD', 'EUR')
-    }
-
-    // --- CLASS METHODS --- 
-
-    // Set base
-    setBase(selectedCurrency) {
-        fetchCurrency(selectedCurrency)
+        fetchCurrency('USD')
             .then(response => {
                 this.setState({ date: response.date })
                 const currencies = []
@@ -123,10 +114,44 @@ export default class Currency extends Component {
                 console.log(error)
                 this.setState({ hasError: true })
             })
+
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 1, 'months')
+        this.getGraphInfo(end_date, start_date, 'USD', 'EUR')
+    }
+
+    // --- CLASS METHODS --- 
+
+    // Set base
+    setBase(selectedCurrency) {
+        this.setState({ infoIsLoading: true })
+        fetchCurrency(selectedCurrency)
+            .then(response => {
+                this.setState({ date: response.date })
+                const currencies = []
+                for (const [prop, value] of Object.entries(response.rates)) {
+                    const currencyName = '(' + currenciesName[prop] + ')'
+                    currencies.push({
+                        value: prop,
+                        label: `${prop} ${currencyName}`,
+                        rate: value
+                    })
+                }
+                this.setState({ listCurrency: currencies, isLoaded: true, hasError: false, infoIsLoading: false })
+                if (this.state.inputValue && this.state.outputCurrency) {
+                    this.setState({ outputValue: toCurrency(this.state.inputValue, this.state.outputCurrency, currencies) })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                this.setState({ hasError: true, infoIsLoading: false })
+            })
     }
 
     // Get Graph Info
     getGraphInfo(startDate, endDate, baseCurrency, destCurrency) {
+        console.log('getGraphInfo has been called with ' + startDate, endDate, baseCurrency, destCurrency)
         fetchHistoryCurrency(startDate, endDate, baseCurrency, destCurrency)
             .then(response => {
                 const graphTitle = { base: baseCurrency, dest: destCurrency, start_at: startDate, end_at: endDate }
@@ -150,19 +175,22 @@ export default class Currency extends Component {
 
         if (selectedCurrency === undefined) {
             this.setState({ inputCurrency: '', outputValue: '' })
-        } else {
-            this.setState({ inputCurrency: selectedCurrency, optionsInput: { value: selectedCurrency, label: selectedCurrency } })
-            this.setBase(selectedCurrency)
-
-            // Updating History 
-            const date = new Date(Date.now())
-            const start_date = getDate(date)
-            const end_date = getDateBefore(date, 1, 'months')
-            this.getGraphInfo(end_date, start_date, selectedCurrency, this.state.outputCurrency)
-            setTimeout(() => {
-                this.setState({ active: 'month' })
-            }, 500)
+            return
         }
+        this.setState({ inputCurrency: selectedCurrency, optionsInput: { value: selectedCurrency, label: selectedCurrency } })
+        this.setBase(selectedCurrency)
+        const date = new Date(Date.now())
+        const start_date = getDate(date)
+        const end_date = getDateBefore(date, 1, 'months')
+
+        if (this.state.outputCurrency === '') {
+            this.getGraphInfo(end_date, start_date, selectedCurrency, 'EUR')
+        } else {
+            this.getGraphInfo(end_date, start_date, selectedCurrency, this.state.outputCurrency)
+        }
+        setTimeout(() => {
+            this.setState({ active: 'month' })
+        }, 500)
     }
 
     // Currency output change
@@ -190,9 +218,7 @@ export default class Currency extends Component {
 
     // Value input change
     handleValueInputChange(value) {
-
         this.setState({ inputValue: value })
-
         if (this.state.inputCurrency && this.state.outputCurrency) {
             this.setState({ outputValue: toCurrency(value, this.state.outputCurrency, this.state.listCurrency) })
         }
@@ -200,9 +226,7 @@ export default class Currency extends Component {
 
     // Value output change
     handleValueOutputChange(value) {
-
         this.setState({ outputValue: value })
-
         if (this.state.inputCurrency && this.state.outputCurrency) {
             this.setState({ inputValue: fromCurrency(value, this.state.outputCurrency, this.state.listCurrency) })
         }
@@ -215,9 +239,8 @@ export default class Currency extends Component {
 
     // Reverse 
     reverse() {
-        const {inputCurrency, outputCurrency, optionsInput, optionsOutput} = this.state
+        const { inputCurrency, outputCurrency, optionsInput, optionsOutput } = this.state
         if (!inputCurrency || !outputCurrency) { return }
-        
         this.setState({ inputCurrency: outputCurrency, outputCurrency: inputCurrency, optionsInput: optionsOutput, optionsOutput: optionsInput })
         this.setBase(outputCurrency)
 
@@ -234,7 +257,6 @@ export default class Currency extends Component {
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
-
         if (this.state.hasError) {
             return (
                 <Container>
@@ -246,51 +268,60 @@ export default class Currency extends Component {
             );
         }
 
-        return (
-            <Container>
-                <LoadingSpinner />
-                {this.state.inputCurrency && this.state.outputCurrency
-                    ? <><InformationCurrency state={this.state} /><InformationDate state={this.state} /></>
-                    : <div className='select_currency'>
-                        <p>Please select currency.</p>
-                    </div>
-                }
+        if (!this.state.isLoaded) {
+            return (
+                <>
+                    <Row>
+                        <Col xs={12} sm={12} md={12} lg={8}>
+                            <div className="mt-5">
+                                <ScaleLoader css="display: flex; justify-content: center;" color={"#2E3030"} size={15} />
+                            </div>
+                        </Col>
+                    </Row>
+                </>
+            );
+        } else {
+            return (
+                <Container>
+                    <Row>
+                        <Col style={{ height: '22vh' }}>
+                            <DisplayInformationCurrency state={this.state} />
+                        </Col>
+                    </Row>
 
-                {/* Input Value & Currency */}
-                <Row>
-                    <Col xs={12} sm={12} md={12} lg={8}>
-                        <Button onClick= {() => this.reverse()}>Reverse</Button>
-                        <Row>
-                            <Col xs={12} sm={3} md={3} lg={3} className='inputValue my-auto'>
-                                <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
-                            </Col>
-                            <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: this.state.optionsInput.value, label: this.state.optionsInput.label }} />
-                            </Col>
-                        </Row>
+                    {/* Input Value & Currency */}
+                    <Row>
+                        <Col xs={12} sm={12} md={12} lg={8}>
+                            <Button onClick={() => this.reverse()}>Reverse</Button>
+                            <Row>
+                                <Col xs={12} sm={3} md={3} lg={3} className='inputValue my-auto'>
+                                    <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
+                                </Col>
+                                <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
+                                    <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: this.state.optionsInput.value, label: this.state.optionsInput.label }} />
+                                </Col>
+                            </Row>
 
-                        {/* Output Value & Currency */}
-                        <Row className='mt-sm-3'>
-                            <Col xs={12} sm={3} md={3} lg={3} className='mt-4 mt-sm-0 my-auto inputValue'>
-                                <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
-                            </Col>
-                            <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
-                                <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: this.state.optionsOutput.value, label: this.state.optionsOutput.label }} />
-                            </Col>
-                        </Row>
+                            {/* Output Value & Currency */}
+                            <Row className='mt-sm-3'>
+                                <Col xs={12} sm={3} md={3} lg={3} className='mt-4 mt-sm-0 my-auto inputValue'>
+                                    <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
+                                </Col>
+                                <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
+                                    <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: this.state.optionsOutput.value, label: this.state.optionsOutput.label }} />
+                                </Col>
+                            </Row>
 
-                        {/* Display Graph */}
-                        <Row className='justify-content-center text-center mt-2 mt-md-5'>
-                            <Col>
-                                {this.state.inputCurrency && this.state.outputCurrency && this.state.isHistoryLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} active={this.state.active} setActive={this.setActive} />}
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-
-            </Container>
-
-        )
+                            {/* Display Graph */}
+                            <Row className='justify-content-center text-center mt-2 mt-md-5'>
+                                <Col>
+                                    {this.state.inputCurrency && this.state.outputCurrency && this.state.isHistoryLoaded && <CurrencyGraph graphValues={this.state.graphValues} graphLegend={this.state.graphLegend} graphTitle={this.state.graphTitle} getGraphInfo={this.getGraphInfo} active={this.state.active} setActive={this.setActive} />}
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Container>
+            )
+        }
     }
 }
-
