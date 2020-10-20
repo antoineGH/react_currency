@@ -31,9 +31,11 @@ export default class InputCurrency extends Component {
 
         return (
             <Select
+                key={new Date().getTime()}
+                
                 options={listCurrency}
                 values={this.props.options && [this.props.options]}
-                
+
                 onChange={(selected) => this.handleChange(selected)}
                 keepSelectedInList={true}
                 dropdownHandle={true}
@@ -47,7 +49,7 @@ export default class InputCurrency extends Component {
                 // No Data Render Custom Method
                 noDataRenderer={this.customNoDataRenderer}
 
-                style={{borderRadius: '.25rem'}}
+                style={{ borderRadius: '.25rem' }}
             />
         )
     }

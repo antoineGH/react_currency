@@ -85,8 +85,8 @@ export default class Currency extends Component {
             graphValues: {},
             graphTitle: {},
 
-            optionsInput: { value: "USD", label: "USD (United States Dollar)" },
-            optionsOutput: { value: "EUR", label: "EUR (Euro)" }
+            optionsInput: { value: "USD", label: "USD" },
+            optionsOutput: { value: "EUR", label: "EUR" }
         }
     }
 
@@ -151,7 +151,6 @@ export default class Currency extends Component {
 
     // Get Graph Info
     getGraphInfo(startDate, endDate, baseCurrency, destCurrency) {
-        console.log('getGraphInfo has been called with ' + startDate, endDate, baseCurrency, destCurrency)
         fetchHistoryCurrency(startDate, endDate, baseCurrency, destCurrency)
             .then(response => {
                 const graphTitle = { base: baseCurrency, dest: destCurrency, start_at: startDate, end_at: endDate }
@@ -254,7 +253,7 @@ export default class Currency extends Component {
         }, 500)
     }
 
-    
+
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
