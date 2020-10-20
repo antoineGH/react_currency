@@ -21,7 +21,6 @@ import fetchHistoryCurrency from './utils/fetchHistoryCurrency'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Button from 'react-bootstrap/Button'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -41,7 +40,7 @@ function DisplayInformationCurrency(props) {
     } else if (state.outputCurrency && state.inputCurrency) {
         return (
             <>
-                <InformationCurrency state={state} />
+                <InformationCurrency state={state} reverse={props.reverse}/>
                 <InformationDate state={state} />
             </>
         );
@@ -64,6 +63,7 @@ export default class Currency extends Component {
         this.handleValueOutputChange = this.handleValueOutputChange.bind(this);
         this.getGraphInfo = this.getGraphInfo.bind(this);
         this.setActive = this.setActive.bind(this);
+        this.reverse = this.reverse.bind(this);
         this.state = {
             isLoaded: false,
             hasError: false,
@@ -173,7 +173,7 @@ export default class Currency extends Component {
     handleCurrencyInputChange(selectedCurrency) {
 
         if (selectedCurrency === undefined) {
-            this.setState({ inputCurrency: '', outputValue: '' })
+            this.setState({ inputCurrency: '', outputValue: '', optionsInput: { value: "", label: "" }, optionsOutput: { value: "", label: "" }  })
             return
         }
         this.setState({ inputCurrency: selectedCurrency, optionsInput: { value: selectedCurrency, label: selectedCurrency } })
@@ -284,30 +284,29 @@ export default class Currency extends Component {
             return (
                 <Container>
                     <Row>
-                        <Col style={{ height: '22vh' }}>
-                            <DisplayInformationCurrency state={this.state} />
+                        <Col style={{ height: '16vh' }}>
+                            <DisplayInformationCurrency state={this.state} reverse={this.reverse} />
                         </Col>
                     </Row>
 
                     {/* Input Value & Currency */}
                     <Row>
                         <Col xs={12} sm={12} md={12} lg={8}>
-                            <Button onClick={() => this.reverse()}>Reverse</Button>
                             <Row>
                                 <Col xs={12} sm={3} md={3} lg={3} className='inputValue my-auto'>
                                     <InputValue inputValue={this.state.inputValue} onValueChange={this.handleValueInputChange} />
                                 </Col>
-                                <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0' >
+                                <Col xs={12} sm={9} md={5} lg={5} className='inputCurrency mt-2 mt-sm-0' >
                                     <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyInputChange} options={{ value: this.state.optionsInput.value, label: this.state.optionsInput.label }} />
                                 </Col>
                             </Row>
 
                             {/* Output Value & Currency */}
                             <Row className='mt-sm-3'>
-                                <Col xs={12} sm={3} md={3} lg={3} className='mt-4 mt-sm-0 my-auto inputValue'>
+                                <Col xs={12} sm={3} md={3} lg={3} className='mt-4 mt-sm-0 inputValue'>
                                     <InputValue inputValue={this.state.outputValue} onValueChange={this.handleValueOutputChange} />
                                 </Col>
-                                <Col xs={12} sm={9} md={8} lg={8} className='inputCurrency mt-2 mt-sm-0'>
+                                <Col xs={12} sm={9} md={5} lg={5} className='inputCurrency mt-2 mt-sm-0'>
                                     <InputCurrency listCurrency={listCurrency} onCurrencyChange={this.handleCurrencyOutputChange} options={{ value: this.state.optionsOutput.value, label: this.state.optionsOutput.label }} />
                                 </Col>
                             </Row>

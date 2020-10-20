@@ -103,7 +103,7 @@ export default class CurrencyGraph extends Component {
         return (
             <>
                 <ListGroup horizontal>
-                    <Row className="justify-content-center mt-3 mb-2">
+                    <Row className="justify-content-center mt-3 mb-4">
                         <Col xs={11} md={'auto'} style={{ paddingLeft: '0px', paddingRight: '0px' }} className='ml-xs-0 ml-md-3'>
                             <ListGroup.Item className={this.props.active === '5days' && 'active'} action onClick={this.getFiveDays}>5 Days</ListGroup.Item>
                         </Col>
