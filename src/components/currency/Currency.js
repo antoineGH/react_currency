@@ -254,6 +254,7 @@ export default class Currency extends Component {
         }, 500)
     }
 
+    
     // --- RENDER ---
     render() {
         const listCurrency = this.state.listCurrency;
