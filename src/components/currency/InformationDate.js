@@ -10,7 +10,7 @@ export default function InformationDate(props) {
         return (
             <Row>
                 <Col xs={12} sm={12} md={6}>
-                    {props.state.date && <p style={{ marginTop: '-4.5%' }} className='currency_description_details'>{getDatetime(Date.parse(props.state.date))}</p>}
+                    {props.state.date && <p className='info_date'>{getDatetime(Date.parse(props.state.date))}</p>}
                 </Col>
             </Row>
         );

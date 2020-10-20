@@ -30,13 +30,36 @@
   margin-right: -3%;
 }
 
+.top_pannel {
+  height: 18vh;
+}
+
+.info_date{
+  margin-top: -4.5%;
+}
+
+@media (max-width: 1199px) { 
+  .top_pannel {
+    height: 20vh;
+  }
+ }
+
 @media (max-width: 767.98px) { 
   .list-group-item {
-    width: 70%;
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
   }
+  .top_pannel {
+    height: 18vh;
+  }
+  .info_date{
+    margin-top: 0px;
+  }
  }
+
+
+
 
 /* Currency Graph Design */
 

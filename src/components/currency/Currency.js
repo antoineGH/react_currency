@@ -284,7 +284,7 @@ export default class Currency extends Component {
             return (
                 <Container>
                     <Row>
-                        <Col style={{ height: '16vh' }}>
+                        <Col className='top_pannel'>
                             <DisplayInformationCurrency state={this.state} reverse={this.reverse} />
                         </Col>
                     </Row>
