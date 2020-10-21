@@ -261,7 +261,7 @@ export default class Currency extends Component {
             return (
                 <Container>
                     <div className='error_data'>
-                        <FontAwesomeIcon className='mt-1 mr-1' size="lg" icon={['fas', 'exclamation-circle']} />
+                        <FontAwesomeIcon className='mt-1 mr-1' size="lg" icon={['fas', 'times']} />
                         Impossible to fetch data, try again later.
                     </div>
                 </Container>
