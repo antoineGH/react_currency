@@ -173,7 +173,7 @@ export default class Currency extends Component {
     handleCurrencyInputChange(selectedCurrency) {
 
         if (selectedCurrency === undefined) {
-            this.setState({ inputCurrency: '', outputValue: '', optionsInput: { value: "", label: "" }, optionsOutput: { value: "", label: "" }  })
+            this.setState({ inputCurrency: '', outputValue: '', optionsInput: { value: "", label: "" }})
             return
         }
         this.setState({ inputCurrency: selectedCurrency, optionsInput: { value: selectedCurrency, label: selectedCurrency } })
@@ -196,7 +196,7 @@ export default class Currency extends Component {
     handleCurrencyOutputChange(selectedCurrency) {
 
         if (selectedCurrency === undefined) {
-            this.setState({ outputCurrency: '', outputValue: '' })
+            this.setState({ outputCurrency: '', outputValue: '', optionsOutput: { value: "", label: "" } })
         } else {
             this.setState({ outputCurrency: selectedCurrency, optionsOutput: { value: selectedCurrency, label: selectedCurrency } })
 
