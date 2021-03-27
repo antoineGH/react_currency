@@ -15,7 +15,7 @@ This react front project contact a Foreign exchange rates API. D
 
 > https://exchangeratesapi.io/
 
-Data are published by the European Central Bank.
+Data are published hourly by the European Central Bank.
 
 ## 2. Installation instructions<a name="installation"></a>
 
