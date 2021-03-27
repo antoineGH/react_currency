@@ -5,12 +5,17 @@
 1. [Project description](#description)
 2. [Installation instructions](#installation)
 3. [Project structure](#structure)
-4. [Explainations](#explainations)
-5. [Screenshots](#screenshots)
+4. [Screenshots](#screenshots)
 
 ## 1. Project description<a name="description"></a>
 
-CarGiants simulates a car selling platform. Customer to Customer or Business to Customer. One user can publish an offer for his car, and this offer can be browse by other users. The selling user can then be contacted and decide details about the sell.
+Currency is designed to convert one currency into another in order to check its corresponding value.
+
+This react front project contact a Foreign exchange rates API. D
+
+> https://exchangeratesapi.io/
+
+Data are published by the European Central Bank.
 
 ## 2. Installation instructions<a name="installation"></a>
 
@@ -76,8 +81,6 @@ npm start
         -   loading
             -   LoadingSpinner.js
 
-## 4. Explainations<a name="explainations"></a>
-
 ## 5. Screenshots<a name="screenshots"></a>
 
-![GetCAR Screenshot](https://github.com/antoineratat/react_cargiant/blob/master/screenshots/1.PNG?raw=true)
+![Currency Screenshot](https://github.com/antoineratat/react_currency/blob/main/screenshots/1.PNG?raw=true)
