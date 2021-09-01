@@ -83,4 +83,4 @@ npm start
 
 ## 5. Screenshots<a name="screenshots"></a>
 
-![Currency Screenshot](https://github.com/antoineratat/react_currency/blob/main/screenshots/1.PNG?raw=true)
+![Currency Screenshot](https://templars.guru/app/github/react_currency/1.PNG)
